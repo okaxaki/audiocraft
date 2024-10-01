@@ -234,6 +234,11 @@ class EncodecModel(CompressionModel):
         assert x.dim() == 3
         x, scale = self.preprocess(x)
         emb = self.encoder(x)
+        if x.device.type == 'mps':
+            # XXX: Since mps-encoder does not work, cpu-encoder is used instead
+            emb = self.encoder.to('cpu')(x.to('cpu')).to('mps')
+        else:
+            emb = self.encoder(x)
         codes = self.quantizer.encode(emb)
         return codes, scale
 
@@ -249,7 +254,12 @@ class EncodecModel(CompressionModel):
             out (torch.Tensor): Float tensor of shape [B, C, T], the reconstructed audio.
         """
         emb = self.decode_latent(codes)
-        out = self.decoder(emb)
+        # out = self.decoder(emb)
+        if emb.device.type == 'mps':
+            # XXX: Since mps-decoder does not work, cpu-decoder is used instead
+            out = self.decoder.to('cpu')(emb.to('cpu')).to('mps')
+        else:
+            out = self.decoder(emb)        
         out = self.postprocess(out, scale)
         # out contains extra padding added by the encoder and decoder
         return out

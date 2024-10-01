@@ -71,7 +71,7 @@ class BaseGenModel(ABC):
         self.device = next(iter(lm.parameters())).device
         self.generation_params: dict = {}
         self._progress_callback: tp.Optional[tp.Callable[[int, int], None]] = None
-        if self.device.type == 'cpu':
+        if self.device.type == 'cpu' or self.device.type == 'mps':
             self.autocast = TorchAutocast(enabled=False)
         else:
             self.autocast = TorchAutocast(
