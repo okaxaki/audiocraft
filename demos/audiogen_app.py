@@ -261,9 +261,15 @@ def ui_full(launch_kwargs):
                 output = gr.Video(label="Generated Music", visible=False)
                 audio_output = gr.Audio(label="Generated Music (wav)", type='filepath')
 
-        submit.click(do_translate, inputs=[text, useTranslation], outputs=text).then(predict_full, 
-                     inputs=[model, model_path, text, duration, topk, topp, temperature, cfg_coef],
-                     outputs=[output, audio_output])
+        submit.click(do_translate, 
+                     inputs=[text, useTranslation], 
+                     outputs=text,
+                     queue=False).then(
+                        predict_full, 
+                        inputs=[model, model_path, text, duration, topk, topp, temperature, cfg_coef],
+                        outputs=[output, audio_output],
+                        concurrency_limit=1,
+                        concurrency_id='gpu_queue', queue=True)
 
         interface.queue().launch(**launch_kwargs)
 
