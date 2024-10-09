@@ -258,8 +258,8 @@ def ui_full(launch_kwargs):
                             temperature = gr.Number(label="Temperature", value=1.0, interactive=True)
                             cfg_coef = gr.Number(label="Classifier Free Guidance", value=3.0, interactive=True)
             with gr.Column():
-                output = gr.Video(label="Generated Music", visible=False)
-                audio_output = gr.Audio(label="Generated Music (wav)", type='filepath')
+                output = gr.Video(label="Generated Audio", visible=False)
+                audio_output = gr.Audio(label="Generated Audio (wav)", type='filepath')
 
         submit.click(do_translate, 
                      inputs=[text, useTranslation], 
